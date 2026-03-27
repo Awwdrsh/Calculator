@@ -8,16 +8,18 @@ let firstValue = "";
 
 // Append number or decimal
 function appendNumber(num) {
+    // Prevent multiple decimals
+    if (num === '.' && currentInput.includes('.')) return;
+
     currentInput += num;
     document.getElementById("display").value = currentInput;
 }
 
 // Set operation (+, -, *, /)
 function setOperation(op) {
-    if (currentInput === "") {
-        alert("Enter a number first");
-        return;
-    }
+    // If no input, do nothing (no annoying alert)
+    if (!currentInput) return;
+
     firstValue = currentInput;
     operator = op;
     currentInput = "";
@@ -25,17 +27,9 @@ function setOperation(op) {
 
 // Perform calculation
 function calculate() {
-    if (!operator) {
-        alert("No operation selected");
-        return;
-    }
+    // If something missing, just ignore instead of error
+    if (!operator || !currentInput || !firstValue) return;
 
-    if (currentInput === "" || firstValue === "") {
-        alert("Enter numbers first");
-        return;
-    }
-
-    let result;
     let a = parseFloat(firstValue);
     let b = parseFloat(currentInput);
 
@@ -44,21 +38,24 @@ function calculate() {
         return;
     }
 
+    let result;
+
     switch (operator) {
         case '+': result = add(a, b); break;
         case '-': result = subtract(a, b); break;
         case '*': result = multiply(a, b); break;
         case '/': result = divide(a, b); break;
-        default:
-            alert("Invalid operation");
-            return;
+        default: return;
     }
 
     if (handleError(result)) return;
 
     document.getElementById("display").value = result;
+
+    // Allow chaining calculations
     currentInput = result.toString();
     operator = "";
+    firstValue = "";
 }
 
 // Clear display
@@ -69,7 +66,7 @@ function clearDisplay() {
     document.getElementById("display").value = "";
 }
 
-// ✅ Make functions accessible to HTML
+// ✅ Make functions accessible in HTML
 window.appendNumber = appendNumber;
 window.setOperation = setOperation;
 window.calculate = calculate;
